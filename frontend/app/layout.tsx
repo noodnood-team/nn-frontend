@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 };
 
 import MobileFrame from "../components/MobileFrame";
+import Navbar from "../components/Navbar";
 
 export default function RootLayout({
   children,
@@ -34,7 +35,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-neutral-900">
-        <MobileFrame>{children}</MobileFrame>
+        <MobileFrame>
+          <Navbar />
+          {children}
+        </MobileFrame>
       </body>
     </html>
   );

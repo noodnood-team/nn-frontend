@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       message: "This result is an estimate based on the uploaded image and may not be 100% accurate."
     });
 
-  } catch (err) {
+  } catch {
     return NextResponse.json({ ok: false, message: 'Internal server error' }, { status: 500 });
   }
 }

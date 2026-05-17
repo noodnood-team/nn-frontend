@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { UploadCloud, Camera, Flame, Activity, AlertTriangle, RefreshCcw, ImageOff } from "lucide-react";
+import { UploadCloud, Camera, Flame, Activity, AlertTriangle, RefreshCcw, ImageOff, Beef, Wheat, Droplets } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getApiBaseUrl } from "@/lib/api-base-url";
 import { parseResponseJson } from "@/lib/parse-json-response";
@@ -66,7 +66,6 @@ export default function NutritionApp() {
 
     if (!base) {
       if (process.env.NODE_ENV === "development") {
-        // eslint-disable-next-line no-console -- surfacing config mistakes in dev
         console.error("NEXT_PUBLIC_API_URL is not set or empty");
       }
       setResults({ ok: false });
@@ -141,20 +140,7 @@ export default function NutritionApp() {
           </div>
         </div>
       )}
-      {/* Navbar Section */}
-      <div className="absolute top-0 left-0 right-0 z-50 p-6 flex justify-between items-start pointer-events-none">
-        <div className="flex items-center gap-3 pointer-events-auto">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img 
-            src="/logo.png" 
-            alt={NUTRITION_APP.alt.logo} 
-            className="w-14 h-14 rounded-full border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] bg-[#f2ead6] object-cover" 
-          />
-          <span className="font-black uppercase tracking-tight text-[#13202e] text-lg bg-[#f2ead6] px-4 py-1.5 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] mt-2">
-            {NUTRITION_APP.brand.name}
-          </span>
-        </div>
-      </div>
+
       {/* Background Image Layer */}
       <AnimatePresence>
         {imagePreview && (
@@ -272,7 +258,7 @@ export default function NutritionApp() {
                 setIsCollapsed(false);
               }
             }}
-            className="absolute z-30 bottom-0 left-0 right-0 mx-auto w-full max-w-md bg-[#f2ead6] rounded-t-[40px] border-t-8 border-l-8 border-r-8 border-[#13202e] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] p-8 max-h-[85vh] touch-none"
+            className="absolute z-30 bottom-0 left-0 right-0 mx-auto w-full max-w-md bg-[#f2ead6] rounded-t-[40px] border-t-8 border-l-8 border-r-8 border-[#13202e] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] p-6 sm:p-8 max-h-[85vh] touch-none"
           >
             <motion.div 
               className="w-16 h-2 bg-[#13202e] rounded-full mx-auto mb-8 opacity-50 cursor-pointer active:scale-110 transition-transform hover:opacity-100" 
@@ -283,29 +269,56 @@ export default function NutritionApp() {
               <div className="flex flex-col h-full space-y-6">
                 <div className="flex justify-between items-end border-b-4 border-[#13202e] pb-4">
                   <div>
-                    <h3 className="text-6xl font-black text-[#13202e] tracking-tighter">{results.prediction.calories}</h3>
+                    <h3 className={`font-black text-[#13202e] tracking-tighter ${
+                      results.prediction.calories.toFixed(2).length > 8 ? "text-4xl" :
+                      results.prediction.calories.toFixed(2).length > 6 ? "text-5xl" :
+                      "text-6xl"
+                    }`}>
+                      {results.prediction.calories.toFixed(2)}
+                    </h3>
                     <p className="text-sm font-bold uppercase tracking-widest text-[#de4b28] mt-2 flex items-center gap-1.5">
                       <Flame size={18} strokeWidth={3} /> {NUTRITION_APP.success.totalKcal}
                     </p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                  <div className="bg-white rounded-2xl p-4 flex flex-col items-center justify-center border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e]">
-                    <span className="text-[#13202e] font-black text-2xl sm:text-3xl">{results.prediction.protein}g</span>
-                    <span className="text-[10px] sm:text-xs text-[#61859b] mt-1 uppercase tracking-black font-black">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                  <div className="bg-[#b5d5e2] text-[#13202e] rounded-2xl py-3 px-1 min-[380px]:px-2 sm:p-4 flex flex-col items-center justify-center border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e]">
+                    <Beef size={24} strokeWidth={2.5} className="mb-1 text-[#de4b28]" />
+                    <span className={`font-black tracking-tighter sm:tracking-normal ${
+                      results.prediction.protein.toFixed(2).length > 6 
+                        ? "text-xs min-[380px]:text-sm sm:text-lg" 
+                        : "text-base min-[380px]:text-lg sm:text-2xl"
+                    }`}>
+                      {results.prediction.protein.toFixed(2)}g
+                    </span>
+                    <span className="text-[10px] sm:text-xs uppercase tracking-widest font-black opacity-70 mt-1">
                       {NUTRITION_APP.success.protein}
                     </span>
                   </div>
-                  <div className="bg-white rounded-2xl p-4 flex flex-col items-center justify-center border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e]">
-                    <span className="text-[#13202e] font-black text-2xl sm:text-3xl">{results.prediction.carbs}g</span>
-                    <span className="text-[10px] sm:text-xs text-[#61859b] mt-1 uppercase tracking-black font-black">
+                  <div className="bg-[#f2ead6] text-[#13202e] rounded-2xl py-3 px-1 min-[380px]:px-2 sm:p-4 flex flex-col items-center justify-center border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e]">
+                    <Wheat size={24} strokeWidth={2.5} className="mb-1 text-[#a88655]" />
+                    <span className={`font-black tracking-tighter sm:tracking-normal ${
+                      results.prediction.carbs.toFixed(2).length > 6 
+                        ? "text-xs min-[380px]:text-sm sm:text-lg" 
+                        : "text-base min-[380px]:text-lg sm:text-2xl"
+                    }`}>
+                      {results.prediction.carbs.toFixed(2)}g
+                    </span>
+                    <span className="text-[10px] sm:text-xs uppercase tracking-widest font-black opacity-70 mt-1">
                       {NUTRITION_APP.success.carbs}
                     </span>
                   </div>
-                  <div className="bg-white rounded-2xl p-4 flex flex-col items-center justify-center border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e]">
-                    <span className="text-[#13202e] font-black text-2xl sm:text-3xl">{results.prediction.fat}g</span>
-                    <span className="text-[10px] sm:text-xs text-[#61859b] mt-1 uppercase tracking-black font-black">
+                  <div className="bg-[#7198ad] text-[#f2ead6] rounded-2xl py-3 px-1 min-[380px]:px-2 sm:p-4 flex flex-col items-center justify-center border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e]">
+                    <Droplets size={24} strokeWidth={2.5} className="mb-1 text-[#b5d5e2]" />
+                    <span className={`font-black tracking-tighter sm:tracking-normal ${
+                      results.prediction.fat.toFixed(2).length > 6 
+                        ? "text-xs min-[380px]:text-sm sm:text-lg" 
+                        : "text-base min-[380px]:text-lg sm:text-2xl"
+                    }`}>
+                      {results.prediction.fat.toFixed(2)}g
+                    </span>
+                    <span className="text-[10px] sm:text-xs uppercase tracking-widest font-black opacity-90 mt-1">
                       {NUTRITION_APP.success.fat}
                     </span>
                   </div>

@@ -19,7 +19,7 @@ export const NUTRITION_APP = {
     label: "Analyzing Fuel...",
   },
   success: {
-    totalKcal: "Total Kcal",
+    totalKcal: "Total Calories",
     protein: "Protein",
     carbs: "Carbs",
     fat: "Fat",

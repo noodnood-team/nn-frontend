@@ -107,6 +107,7 @@ export function isNoFoodResponse(data: AnalyzeResponse): boolean {
     msg.includes("could not detect food") ||
     msg.includes("could not detect any food") ||
     msg.includes("doesn't look like a food") ||
-    msg.includes("don't look like a food")
+    msg.includes("don't look like a food") ||
+    msg.includes("does not appear to be a food")
   );
 }
