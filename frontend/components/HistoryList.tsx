@@ -2,13 +2,14 @@
 
 import React, { useState } from "react";
 import { PredictionItem } from "@/lib/api-types";
-import { X, Flame, Beef, Wheat, Droplets, Clock, ImageOff, AlertTriangle, ChevronRight } from "lucide-react";
+import { X, Flame, Beef, Wheat, Droplets, Clock, ImageOff, AlertTriangle, ChevronRight, ThumbsUp, ThumbsDown } from "lucide-react";
 
 interface HistoryListProps {
   items: PredictionItem[];
+  isAdminDashboard?: boolean;
 }
 
-export default function HistoryList({ items }: HistoryListProps) {
+export default function HistoryList({ items, isAdminDashboard = false }: HistoryListProps) {
   const [selected, setSelected] = useState<PredictionItem | null>(null);
 
   if (!items || items.length === 0) {
@@ -60,6 +61,11 @@ export default function HistoryList({ items }: HistoryListProps) {
                   <span className="font-black text-[#de4b28] text-sm uppercase">Failed</span>
                 )}
               </div>
+              {isAdminDashboard && item.rating && isSuccess && (
+                item.rating === 'like' 
+                  ? <ThumbsUp size={18} className="text-[#4ade80] mx-1" strokeWidth={3} />
+                  : <ThumbsDown size={18} className="text-[#f87171] mx-1" strokeWidth={3} />
+              )}
               <ChevronRight size={20} strokeWidth={3} className="text-[#3c556b] opacity-40 group-hover:opacity-100 transition-opacity" />
             </div>
           </button>
@@ -152,6 +158,24 @@ export default function HistoryList({ items }: HistoryListProps) {
                     {selected.message || "An error occurred during this scan. We could not complete it."}
                   </p>
                 </div>
+              </div>
+            )}
+
+            {(selected.outcome === "success" || selected.ok) && isAdminDashboard && (
+              <div className="mt-4 flex flex-col items-center">
+                {selected.rating === 'like' ? (
+                  <div className="flex items-center gap-2 bg-[#4ade80] text-[#13202e] border-2 border-[#13202e] rounded-lg px-4 py-1.5 font-black text-sm uppercase tracking-wider shadow-[2px_2px_0px_#13202e]">
+                    <ThumbsUp size={16} strokeWidth={3} /> User Liked
+                  </div>
+                ) : selected.rating === 'unlike' ? (
+                  <div className="flex items-center gap-2 bg-[#f87171] text-[#13202e] border-2 border-[#13202e] rounded-lg px-4 py-1.5 font-black text-sm uppercase tracking-wider shadow-[2px_2px_0px_#13202e]">
+                    <ThumbsDown size={16} strokeWidth={3} /> User Disliked
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 bg-[#61859b] text-white border-2 border-[#13202e] rounded-lg px-4 py-1.5 font-black text-sm uppercase tracking-wider shadow-[2px_2px_0px_#13202e]">
+                    No Feedback
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -25,6 +25,7 @@ export interface PredictionItem {
   carbs: number | null;
   fat: number | null;
   detail: string | null;
+  rating: 'like' | 'unlike' | null;
 }
 
 export interface PredictionsResponse {

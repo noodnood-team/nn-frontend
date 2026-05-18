@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { UploadCloud, Camera, Flame, Activity, AlertTriangle, RefreshCcw, ImageOff, Beef, Wheat, Droplets } from "lucide-react";
+import { UploadCloud, Camera, Flame, Activity, AlertTriangle, RefreshCcw, ImageOff, Beef, Wheat, Droplets, ThumbsUp, ThumbsDown, History } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getApiBaseUrl } from "@/lib/api-base-url";
 import { parseResponseJson } from "@/lib/parse-json-response";
@@ -16,10 +16,35 @@ export default function NutritionApp() {
   const [clientNotice, setClientNotice] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [results, setResults] = useState<AnalyzeResponse | null>(null);
+  const [latestPredictionId, setLatestPredictionId] = useState<number | null>(null);
+  const [userRating, setUserRating] = useState<'like' | 'unlike' | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sheetHeight, setSheetHeight] = useState(500);
   const sheetRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const ratingStateRef = useRef({ rating: userRating, id: latestPredictionId });
+
+  useEffect(() => {
+    ratingStateRef.current = { rating: userRating, id: latestPredictionId };
+  }, [userRating, latestPredictionId]);
+
+  useEffect(() => {
+    // Unmount effect to save rating if user navigates away (e.g., clicking Scan History in Navbar)
+    return () => {
+      const { rating, id } = ratingStateRef.current;
+      if (rating && id) {
+        const base = getApiBaseUrl();
+        if (base) {
+          fetch(`${base}/api/v1/dashboard/predictions/${id}/rate`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rating }),
+            keepalive: true
+          }).catch(console.error);
+        }
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (sheetRef.current) {
@@ -109,19 +134,79 @@ export default function NutritionApp() {
       } else {
         setStatus("ERROR");
       }
+
+      try {
+        const idRes = await fetch(`${base}/api/v1/dashboard/predictions?limit=1`);
+        if (idRes.ok) {
+          const idData = await idRes.json();
+          if (idData?.items?.length > 0) {
+            setLatestPredictionId(idData.items[0].id);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch prediction ID", e);
+      }
     } catch {
       setResults({ ok: false });
       setStatus("ERROR");
     }
   };
 
-  const resetApp = () => {
+  const saveRating = async () => {
+    if (userRating && latestPredictionId) {
+      try {
+        const base = getApiBaseUrl();
+        await fetch(`${base}/api/v1/dashboard/predictions/${latestPredictionId}/rate`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rating: userRating })
+        });
+      } catch (e) {
+        console.error("Failed to save rating", e);
+      }
+    }
+  };
+
+  const resetApp = async () => {
+    await saveRating();
     setStatus("IDLE");
     setClientNotice(null);
     setImagePreview(null);
     setResults(null);
     setIsCollapsed(false);
+    setLatestPredictionId(null);
+    setUserRating(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+
+  const renderRatingButtons = () => {
+    return (
+      <div className="flex gap-4 mt-6">
+        <button 
+          onClick={() => setUserRating(prev => prev === 'like' ? null : 'like')}
+          disabled={!latestPredictionId}
+          title={!latestPredictionId ? "Rating unavailable" : ""}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-y-1 active:translate-x-1 ${
+            userRating === 'like' ? 'bg-[#4ade80] text-[#13202e]' : 'bg-[#f2ead6] text-[#13202e] hover:bg-[#e8dec7]'
+          } ${!latestPredictionId ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <ThumbsUp size={20} strokeWidth={3} />
+          Like
+        </button>
+        <button 
+          onClick={() => setUserRating(prev => prev === 'unlike' ? null : 'unlike')}
+          disabled={!latestPredictionId}
+          title={!latestPredictionId ? "Rating unavailable" : ""}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-y-1 active:translate-x-1 ${
+            userRating === 'unlike' ? 'bg-[#f87171] text-[#13202e]' : 'bg-[#f2ead6] text-[#13202e] hover:bg-[#e8dec7]'
+          } ${!latestPredictionId ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <ThumbsDown size={20} strokeWidth={3} />
+          Unlike
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -331,9 +416,11 @@ export default function NutritionApp() {
                   </p>
                 </div>
 
+                {renderRatingButtons()}
+
                 <button 
                   onClick={resetApp}
-                  className="w-full bg-[#de4b28] text-white font-black uppercase tracking-wider py-4 rounded-xl flex items-center justify-center gap-2 mt-6 border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] hover:bg-[#c43f20] active:shadow-none active:translate-y-1 active:translate-x-1 transition-all"
+                  className="w-full bg-[#de4b28] text-white font-black uppercase tracking-wider py-4 rounded-xl flex items-center justify-center gap-2 mt-2 border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] hover:bg-[#c43f20] active:shadow-none active:translate-y-1 active:translate-x-1 transition-all"
                 >
                   <Camera size={20} strokeWidth={3} />
                   {NUTRITION_APP.success.cta}
@@ -358,7 +445,7 @@ export default function NutritionApp() {
 
                 <button
                   onClick={resetApp}
-                  className="w-full bg-[#13202e] text-[#f2ead6] font-black uppercase tracking-wider py-5 rounded-xl flex items-center justify-center gap-2 mt-6 hover:bg-black transition-colors border-2 border-[#13202e] shadow-[4px_4px_0px_#13202e] active:shadow-none active:translate-y-1 active:translate-x-1"
+                  className="w-full bg-[#13202e] text-[#f2ead6] font-black uppercase tracking-wider py-5 rounded-xl flex items-center justify-center gap-2 mt-2 hover:bg-black transition-colors border-2 border-[#13202e] shadow-[4px_4px_0px_#13202e] active:shadow-none active:translate-y-1 active:translate-x-1"
                 >
                   <Camera size={20} strokeWidth={3} />
                   {NUTRITION_APP.noFood.cta}
@@ -383,7 +470,7 @@ export default function NutritionApp() {
 
                 <button 
                   onClick={resetApp}
-                  className="w-full bg-[#13202e] text-[#f2ead6] font-black uppercase tracking-wider py-5 rounded-xl flex items-center justify-center gap-2 mt-6 hover:bg-black transition-colors border-2 border-[#13202e] shadow-[4px_4px_0px_#13202e] active:shadow-none active:translate-y-1 active:translate-x-1"
+                  className="w-full bg-[#13202e] text-[#f2ead6] font-black uppercase tracking-wider py-5 rounded-xl flex items-center justify-center gap-2 mt-2 hover:bg-black transition-colors border-2 border-[#13202e] shadow-[4px_4px_0px_#13202e] active:shadow-none active:translate-y-1 active:translate-x-1"
                 >
                   <RefreshCcw size={20} strokeWidth={3} />
                   {NUTRITION_APP.error.cta}
