@@ -11,6 +11,8 @@ export interface AnalyzeResponse {
   message?: string;
   /** If set to `NO_FOOD`, the backend signals no meal without relying on `message` text. */
   code?: string;
+  /** The record ID returned by the predict endpoint, used for feedback submission. */
+  record_id?: number;
 }
 
 function isFiniteNumber(n: unknown): n is number {
@@ -36,7 +38,8 @@ function tryMacros(p: object): { success: true; macros: Macros } | { success: fa
 function parseOkTrue(
   predRaw: unknown,
   message: string | undefined,
-  code: string | undefined
+  code: string | undefined,
+  record_id: number | undefined
 ): { success: true; data: AnalyzeResponse } | { success: false } {
   if (predRaw === null || predRaw === undefined) {
     return { success: false };
@@ -48,16 +51,17 @@ function parseOkTrue(
   if (!m.success) {
     return { success: false };
   }
-  return { success: true, data: { ok: true, prediction: m.macros, message, code } };
+  return { success: true, data: { ok: true, prediction: m.macros, message, code, record_id } };
 }
 
 function parseOkFalse(
   predRaw: unknown,
   message: string | undefined,
-  code: string | undefined
+  code: string | undefined,
+  record_id: number | undefined
 ): { success: true; data: AnalyzeResponse } | { success: false } {
   if (predRaw === null || predRaw === undefined) {
-    return { success: true, data: { ok: false, prediction: predRaw, message, code } };
+    return { success: true, data: { ok: false, prediction: predRaw, message, code, record_id } };
   }
   if (typeof predRaw !== "object" || predRaw === null) {
     return { success: false };
@@ -66,7 +70,7 @@ function parseOkFalse(
   if (!m.success) {
     return { success: false };
   }
-  return { success: true, data: { ok: false, prediction: m.macros, message, code } };
+  return { success: true, data: { ok: false, prediction: m.macros, message, code, record_id } };
 }
 
 /**
@@ -91,7 +95,8 @@ export function parseAnalyzeResponse(
   }
   const message = o.message as string | undefined;
   const code = o.code as string | undefined;
-  return o.ok ? parseOkTrue(o.prediction, message, code) : parseOkFalse(o.prediction, message, code);
+  const record_id = isFiniteNumber(o.record_id) ? o.record_id : undefined;
+  return o.ok ? parseOkTrue(o.prediction, message, code, record_id) : parseOkFalse(o.prediction, message, code, record_id);
 }
 
 /** Backend: ok: false, prediction: null when the image is not recognized as a meal. */

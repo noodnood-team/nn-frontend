@@ -17,40 +17,48 @@ export default function NutritionApp() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [results, setResults] = useState<AnalyzeResponse | null>(null);
   const [latestPredictionId, setLatestPredictionId] = useState<number | null>(null);
-  const [userRating, setUserRating] = useState<'like' | 'unlike' | null>(null);
+  const [userRating, setUserRating] = useState<'like' | 'dislike' | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sheetHeight, setSheetHeight] = useState(500);
   const sheetRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const ratingStateRef = useRef({ rating: userRating, id: latestPredictionId });
-
-  useEffect(() => {
-    ratingStateRef.current = { rating: userRating, id: latestPredictionId };
-  }, [userRating, latestPredictionId]);
-
-  useEffect(() => {
-    // Unmount effect to save rating if user navigates away (e.g., clicking Scan History in Navbar)
-    return () => {
-      const { rating, id } = ratingStateRef.current;
-      if (rating && id) {
-        const base = getApiBaseUrl();
-        if (base) {
-          fetch(`${base}/api/v1/dashboard/predictions/${id}/rate`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ rating }),
-            keepalive: true
-          }).catch(console.error);
-        }
-      }
-    };
-  }, []);
+  const pendingFeedbackRef = useRef<{ sentiment: 'like' | 'dislike'; recordId: number } | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (sheetRef.current) {
       setSheetHeight(sheetRef.current.offsetHeight);
     }
   }, [results, status]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const pending = pendingFeedbackRef.current;
+      if (pending) {
+        const base = getApiBaseUrl();
+        if (base) {
+          fetch(`${base}/api/v1/prediction/feedback/${pending.recordId}`, {
+            method: "POST",
+            headers: { 
+              "Accept": "application/json",
+              "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({ sentiment: pending.sentiment }),
+            keepalive: true
+          }).catch(console.error);
+        }
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      handleBeforeUnload();
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -135,16 +143,8 @@ export default function NutritionApp() {
         setStatus("ERROR");
       }
 
-      try {
-        const idRes = await fetch(`${base}/api/v1/dashboard/predictions?limit=1`);
-        if (idRes.ok) {
-          const idData = await idRes.json();
-          if (idData?.items?.length > 0) {
-            setLatestPredictionId(idData.items[0].id);
-          }
-        }
-      } catch (e) {
-        console.error("Failed to fetch prediction ID", e);
+      if (data.record_id) {
+        setLatestPredictionId(data.record_id);
       }
     } catch {
       setResults({ ok: false });
@@ -152,23 +152,56 @@ export default function NutritionApp() {
     }
   };
 
-  const saveRating = async () => {
-    if (userRating && latestPredictionId) {
-      try {
-        const base = getApiBaseUrl();
-        await fetch(`${base}/api/v1/dashboard/predictions/${latestPredictionId}/rate`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rating: userRating })
-        });
-      } catch (e) {
-        console.error("Failed to save rating", e);
+  const executeSubmitFeedback = async (sentiment: 'like' | 'dislike', recordId: number, keepalive: boolean = false) => {
+    try {
+      const base = getApiBaseUrl();
+      if (!base) return;
+
+      pendingFeedbackRef.current = null;
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
+
+      await fetch(`${base}/api/v1/prediction/feedback/${recordId}`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ sentiment }),
+        keepalive
+      });
+    } catch (e) {
+      console.error("Failed to submit feedback", e);
     }
   };
 
-  const resetApp = async () => {
-    await saveRating();
+  const submitFeedback = async (sentiment: 'like' | 'dislike') => {
+    if (!latestPredictionId) return;
+    if (userRating === sentiment) return;
+
+    setUserRating(sentiment);
+    pendingFeedbackRef.current = { sentiment, recordId: latestPredictionId };
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => {
+      const pending = pendingFeedbackRef.current;
+      if (pending && pending.sentiment === sentiment && pending.recordId === latestPredictionId) {
+        executeSubmitFeedback(pending.sentiment, pending.recordId).catch(console.error);
+      }
+    }, 5000);
+  };
+
+  const resetApp = () => {
+    const pending = pendingFeedbackRef.current;
+    if (pending) {
+      executeSubmitFeedback(pending.sentiment, pending.recordId).catch(console.error);
+    }
+
     setStatus("IDLE");
     setClientNotice(null);
     setImagePreview(null);
@@ -176,7 +209,10 @@ export default function NutritionApp() {
     setIsCollapsed(false);
     setLatestPredictionId(null);
     setUserRating(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+      fileInputRef.current.click();
+    }
   };
 
 
@@ -184,7 +220,7 @@ export default function NutritionApp() {
     return (
       <div className="flex gap-4 mt-6">
         <button 
-          onClick={() => setUserRating(prev => prev === 'like' ? null : 'like')}
+          onClick={() => submitFeedback('like')}
           disabled={!latestPredictionId}
           title={!latestPredictionId ? "Rating unavailable" : ""}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-y-1 active:translate-x-1 ${
@@ -195,11 +231,11 @@ export default function NutritionApp() {
           Like
         </button>
         <button 
-          onClick={() => setUserRating(prev => prev === 'unlike' ? null : 'unlike')}
+          onClick={() => submitFeedback('dislike')}
           disabled={!latestPredictionId}
           title={!latestPredictionId ? "Rating unavailable" : ""}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-y-1 active:translate-x-1 ${
-            userRating === 'unlike' ? 'bg-[#f87171] text-[#13202e]' : 'bg-[#f2ead6] text-[#13202e] hover:bg-[#e8dec7]'
+            userRating === 'dislike' ? 'bg-[#f87171] text-[#13202e]' : 'bg-[#f2ead6] text-[#13202e] hover:bg-[#e8dec7]'
           } ${!latestPredictionId ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <ThumbsDown size={20} strokeWidth={3} />
@@ -208,10 +244,17 @@ export default function NutritionApp() {
       </div>
     );
   };
-
   return (
-    <div 
-      className="relative flex flex-col w-full h-[100dvh] bg-gradient-to-b from-[#b5d5e2] to-[#7198ad] text-[#13202e] overflow-hidden font-sans"
+    <>
+      <input 
+        type="file" 
+        accept="image/*" 
+        className="hidden" 
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+      />
+      <div 
+        className="relative flex flex-col w-full h-[100dvh] bg-gradient-to-b from-[#b5d5e2] to-[#7198ad] text-[#13202e] overflow-hidden font-sans"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -282,13 +325,7 @@ export default function NutritionApp() {
                 {NUTRITION_APP.idle.selectPhoto}
               </button>
             </div>
-            <input 
-              type="file" 
-              accept="image/*" 
-              className="hidden" 
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-            />
+
           </motion.div>
         )}
       </AnimatePresence>
@@ -481,5 +518,6 @@ export default function NutritionApp() {
         )}
       </AnimatePresence>
     </div>
+    </>
   );
 }

@@ -10,6 +10,13 @@ export interface DashboardSummary {
     avg_carbs: number;
     avg_fat: number;
   } | null;
+  feedback: {
+    feedback_count: number;
+    feedback_rate: number;
+    like_count: number;
+    dislike_count: number;
+    like_rate: number;
+  } | null;
 }
 
 export interface PredictionItem {
@@ -25,7 +32,9 @@ export interface PredictionItem {
   carbs: number | null;
   fat: number | null;
   detail: string | null;
-  rating: 'like' | 'unlike' | null;
+  feedback_sentiment: 'like' | 'dislike' | null;
+  feedback_comment: string | null;
+  feedback_submitted_at: string | null;
 }
 
 export interface PredictionsResponse {
