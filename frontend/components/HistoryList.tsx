@@ -14,7 +14,7 @@ export default function HistoryList({ items, isAdminDashboard = false }: History
 
   if (!items || items.length === 0) {
     return (
-      <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-8 flex flex-col items-center justify-center text-center h-64 mt-6">
+      <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-8 flex flex-col items-center justify-center text-center h-full min-h-[256px] mt-6">
         <h2 className="text-3xl font-black uppercase tracking-tight text-[#13202e] mb-2">No History</h2>
         <p className="text-[#3c556b] font-bold text-lg">Scan some food to start building your history!</p>
       </div>

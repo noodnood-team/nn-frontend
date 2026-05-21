@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { getApiBaseUrl } from "@/lib/api-base-url";
 import { DashboardSummary, PredictionsResponse } from "@/lib/api-types";
-import { LayoutDashboard, Flame, Beef, Wheat, Droplets, AlertCircle, X, MousePointerClick } from "lucide-react";
+import { LayoutDashboard, Flame, Beef, Wheat, Droplets, AlertCircle, X, MousePointerClick, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import HistoryList from "@/components/HistoryList";
 
 export default function DashboardPage() {
@@ -50,17 +50,20 @@ export default function DashboardPage() {
   if (loading && page === 0) {
     return (
       <div className="flex flex-col w-full min-h-[100dvh] bg-gradient-to-b from-[#b5d5e2] to-[#7198ad] text-[#13202e] p-6 pt-28 overflow-y-auto pb-24">
-        <div className="w-full max-w-6xl mx-auto flex flex-col">
+        <div className="w-full max-w-7xl mx-auto flex flex-col">
           <div className="flex items-center gap-4 mb-8 opacity-70 animate-pulse">
             <div className="w-14 h-14 bg-[#13202e] text-[#f2ead6] rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_rgba(19,32,46,1)] border-4 border-[#13202e]">
               <LayoutDashboard size={28} strokeWidth={3} />
             </div>
             <div className="h-10 w-48 bg-[#13202e] rounded-xl border-4 border-[#13202e]"></div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col justify-center items-center text-center animate-pulse h-48">
                <div className="h-6 w-32 bg-[#3c556b] opacity-30 rounded-full mb-4"></div>
                <div className="h-16 w-24 bg-[#13202e] opacity-20 rounded-xl mb-4"></div>
+            </div>
+            <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col animate-pulse h-48">
+               <div className="h-6 w-32 bg-[#3c556b] opacity-30 rounded-full mb-4 mx-auto"></div>
             </div>
             <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col animate-pulse h-[500px]">
                <div className="h-6 w-32 bg-[#3c556b] opacity-30 rounded-full mb-4 mx-auto"></div>
@@ -90,7 +93,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col w-full min-h-[100dvh] bg-gradient-to-b from-[#b5d5e2] to-[#7198ad] text-[#13202e] p-6 pt-28 overflow-y-auto pb-24">
-      <div className="w-full max-w-6xl mx-auto flex flex-col">
+      <div className="w-full max-w-7xl mx-auto flex flex-col">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-14 h-14 bg-[#13202e] text-[#f2ead6] rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_rgba(19,32,46,1)] border-4 border-[#13202e]">
             <LayoutDashboard size={28} strokeWidth={3} />
@@ -100,19 +103,19 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
           {/* Left Column: Stats */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col h-full">
             {!hasData ? (
-               <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-8 flex flex-col items-center justify-center text-center h-64">
+               <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-8 flex flex-col items-center justify-center text-center h-full min-h-[256px]">
                  <h2 className="text-3xl font-black uppercase tracking-tight text-[#13202e] mb-2">No Fuel Logged</h2>
                  <p className="text-[#3c556b] font-bold text-lg">Scan some food to see your stats!</p>
                </div>
             ) : (
-              <>
+              <div className="flex flex-col h-full">
                 <button 
                   onClick={() => setShowOutcomesModal(true)}
-                  className="group w-full bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col justify-center items-center text-center hover:bg-[#e8dec7] transition-colors active:translate-y-1 active:translate-x-1 active:shadow-none"
+                  className="group w-full bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col justify-center items-center text-center hover:bg-[#e8dec7] transition-colors active:translate-y-1 active:translate-x-1 active:shadow-none mb-6"
                 >
                    <span className="text-[#3c556b] font-black uppercase tracking-widest text-sm mb-1">Total Scans</span>
                    <span className="text-6xl font-black tracking-tighter text-[#13202e]">{summary.total_requests}</span>
@@ -123,57 +126,122 @@ export default function DashboardPage() {
                    </div>
                 </button>
 
-                <h2 className="text-2xl font-black uppercase tracking-tight text-[#13202e] mt-4 mb-2">Average Fuel</h2>
-                
-                <div className="flex flex-col gap-3">
-                   <div className="bg-[#de4b28] text-white border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-2xl p-4 flex justify-between items-center mb-1">
-                      <div className="flex flex-col">
-                        <span className="font-black uppercase tracking-widest text-xs opacity-90">Total Calories</span>
-                        <span className="text-4xl font-black">{(summary.nutrition_averages?.avg_calories || 0).toFixed(2)}</span>
-                      </div>
-                      <Flame size={40} strokeWidth={2.5} className="opacity-50" />
-                   </div>
+                <div className="flex flex-col flex-1">
+                  <h2 className="text-2xl font-black uppercase tracking-tight text-[#13202e] mt-2 mb-2">Average Fuel</h2>
+                  
+                  <div className="flex flex-col gap-3 h-full">
+                     <div className="bg-[#de4b28] text-white border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-2xl p-4 flex justify-between items-center mb-1">
+                        <div className="flex flex-col">
+                          <span className="font-black uppercase tracking-widest text-xs opacity-90">Total Calories</span>
+                          <span className="text-4xl font-black">{(summary.nutrition_averages?.avg_calories || 0).toFixed(2)}</span>
+                        </div>
+                        <Flame size={40} strokeWidth={2.5} className="opacity-50" />
+                     </div>
 
-                   <div className="grid grid-cols-3 gap-3">
-                     <div className="bg-[#b5d5e2] text-[#13202e] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                       <Beef size={20} strokeWidth={2.5} className="mb-1 text-[#de4b28]" />
-                       <span className="text-lg font-black leading-none">{(summary.nutrition_averages?.avg_protein || 0).toFixed(2)}g</span>
-                       <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">Pro</span>
+                     <div className="grid grid-cols-3 gap-3 mt-auto">
+                       <div className="bg-[#b5d5e2] text-[#13202e] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                         <Beef size={20} strokeWidth={2.5} className="mb-1 text-[#de4b28]" />
+                         <span className="text-lg font-black leading-none">{(summary.nutrition_averages?.avg_protein || 0).toFixed(2)}g</span>
+                         <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">Pro</span>
+                       </div>
+                       <div className="bg-[#f2ead6] text-[#13202e] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                         <Wheat size={20} strokeWidth={2.5} className="mb-1 text-[#a88655]" />
+                         <span className="text-lg font-black leading-none">{(summary.nutrition_averages?.avg_carbs || 0).toFixed(2)}g</span>
+                         <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">Carb</span>
+                       </div>
+                       <div className="bg-[#7198ad] text-[#f2ead6] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                         <Droplets size={20} strokeWidth={2.5} className="mb-1 text-[#b5d5e2]" />
+                         <span className="text-lg font-black leading-none">{(summary.nutrition_averages?.avg_fat || 0).toFixed(2)}g</span>
+                         <span className="text-[9px] font-black uppercase tracking-widest opacity-90 mt-1">Fat</span>
+                       </div>
                      </div>
-                     <div className="bg-[#f2ead6] text-[#13202e] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                       <Wheat size={20} strokeWidth={2.5} className="mb-1 text-[#a88655]" />
-                       <span className="text-lg font-black leading-none">{(summary.nutrition_averages?.avg_carbs || 0).toFixed(2)}g</span>
-                       <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">Carb</span>
-                     </div>
-                     <div className="bg-[#7198ad] text-[#f2ead6] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                       <Droplets size={20} strokeWidth={2.5} className="mb-1 text-[#b5d5e2]" />
-                       <span className="text-lg font-black leading-none">{(summary.nutrition_averages?.avg_fat || 0).toFixed(2)}g</span>
-                       <span className="text-[9px] font-black uppercase tracking-widest opacity-90 mt-1">Fat</span>
-                     </div>
-                   </div>
+                  </div>
                 </div>
-              </>
+              </div>
+            )}
+          </div>
+
+          {/* Middle Column: Feedback */}
+          <div className="flex flex-col h-full">
+            <h2 className="text-2xl font-black uppercase tracking-tight text-[#13202e] mt-2 mb-2">Feedback</h2>
+            {!hasData || !summary.feedback || summary.feedback.feedback_count === 0 ? (
+              <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-8 flex flex-col items-center justify-center text-center h-full min-h-[256px]">
+                <MessageSquare size={40} strokeWidth={2.5} className="text-[#3c556b] opacity-40 mb-3" />
+                <h3 className="text-2xl font-black uppercase tracking-tight text-[#13202e] mb-2">No Feedback Yet</h3>
+                <p className="text-[#3c556b] font-bold text-sm">Users haven&apos;t rated any scans yet.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 h-full">
+                {/* Feedback Rate Banner */}
+                <div className="bg-[#13202e] text-[#f2ead6] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-2xl p-6 flex justify-between items-center mb-1">
+                  <div className="flex flex-col">
+                    <span className="font-black uppercase tracking-widest text-sm opacity-90 mb-1">Response Rate</span>
+                    <span className="text-6xl font-black tracking-tighter">{(summary.feedback.feedback_rate * 100).toFixed(1)}%</span>
+                  </div>
+                  <MessageSquare size={56} strokeWidth={2.5} className="opacity-30" />
+                </div>
+
+                {/* Like / Dislike Cards */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-[#4ade80] text-[#13202e] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <ThumbsUp size={20} strokeWidth={2.5} className="mb-1" />
+                    <span className="text-2xl font-black leading-none">{summary.feedback.like_count}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">Likes</span>
+                  </div>
+                  <div className="bg-[#f87171] text-[#13202e] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <ThumbsDown size={20} strokeWidth={2.5} className="mb-1" />
+                    <span className="text-2xl font-black leading-none">{summary.feedback.dislike_count}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">Dislikes</span>
+                  </div>
+                </div>
+
+                {/* Satisfaction Bar */}
+                <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-black uppercase tracking-widest text-[10px] text-[#3c556b]">Satisfaction</span>
+                    <span className="font-black text-[#13202e] text-lg">{(summary.feedback.like_rate * 100).toFixed(1)}%</span>
+                  </div>
+                  <div className="w-full h-4 bg-[#f87171] rounded-full border-2 border-[#13202e] overflow-hidden">
+                    <div
+                      className="h-full bg-[#4ade80] rounded-full transition-all duration-500"
+                      style={{ width: `${(summary.feedback.like_rate * 100).toFixed(1)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-1.5">
+                    <span className="flex items-center gap-1 text-[9px] font-bold text-[#3c556b] uppercase"><ThumbsUp size={10} strokeWidth={3} /> Like</span>
+                    <span className="flex items-center gap-1 text-[9px] font-bold text-[#3c556b] uppercase"><ThumbsDown size={10} strokeWidth={3} /> Dislike</span>
+                  </div>
+                </div>
+
+                {/* Total Feedback Count */}
+                <div className="bg-[#b5d5e2] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-xl p-3 flex items-center justify-center gap-2 mt-auto">
+                  <MessageSquare size={16} strokeWidth={3} className="text-[#13202e]" />
+                  <span className="font-black text-[#13202e] text-sm uppercase tracking-wider">
+                    {summary.feedback.feedback_count} of {summary.total_requests} scans rated
+                  </span>
+                </div>
+              </div>
             )}
           </div>
 
           {/* Right Column: History */}
-          <div className="flex flex-col relative">
+          <div className="flex flex-col relative h-full">
              <div className="flex items-center justify-between mb-4 mt-2">
                 <h2 className="text-2xl font-black uppercase tracking-tight text-[#13202e]">History</h2>
              </div>
              
              {loading && page > 0 ? (
-               <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col animate-pulse h-[500px]">
+               <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col animate-pulse h-full min-h-[256px]">
                  <div className="h-6 w-32 bg-[#3c556b] opacity-30 rounded-full mb-4 mx-auto"></div>
                </div>
              ) : (
-               <div className="-mt-6">
+               <div className="-mt-6 flex-1">
                  <HistoryList items={predictions.items || []} isAdminDashboard={true} />
                </div>
              )}
 
              {predictions && predictions.total > limit && (
-              <div className="flex items-center justify-between mt-8 mb-4">
+              <div className="flex items-center justify-between mt-auto pt-8 mb-4">
                 <button 
                   onClick={() => setPage(p => Math.max(0, p - 1))}
                   disabled={page === 0}
