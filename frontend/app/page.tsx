@@ -239,7 +239,7 @@ export default function NutritionApp() {
           } ${!latestPredictionId ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <ThumbsDown size={20} strokeWidth={3} />
-          Unlike
+          Dislike
         </button>
       </div>
     );
