@@ -210,22 +210,22 @@ export default function NutritionApp() {
           onClick={() => submitFeedback('like')}
           disabled={!latestPredictionId}
           title={!latestPredictionId ? "Rating unavailable" : ""}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-y-1 active:translate-x-1 ${
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 sm:py-3 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-y-1 active:translate-x-1 ${
             userRating === 'like' ? 'bg-[#4ade80] text-[#13202e]' : 'bg-[#f2ead6] text-[#13202e] hover:bg-[#e8dec7]'
           } ${!latestPredictionId ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <ThumbsUp size={20} strokeWidth={3} />
+          <ThumbsUp size={18} strokeWidth={3} />
           Like
         </button>
         <button 
           onClick={() => submitFeedback('dislike')}
           disabled={!latestPredictionId}
           title={!latestPredictionId ? "Rating unavailable" : ""}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-y-1 active:translate-x-1 ${
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 sm:py-3 rounded-xl border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-y-1 active:translate-x-1 ${
             userRating === 'dislike' ? 'bg-[#f87171] text-[#13202e]' : 'bg-[#f2ead6] text-[#13202e] hover:bg-[#e8dec7]'
           } ${!latestPredictionId ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <ThumbsDown size={20} strokeWidth={3} />
+          <ThumbsDown size={18} strokeWidth={3} />
           Dislike
         </button>
       </div>
@@ -367,7 +367,7 @@ export default function NutritionApp() {
                 setIsCollapsed(false);
               }
             }}
-            className="absolute z-30 bottom-0 left-0 right-0 mx-auto w-full max-w-md bg-[#f2ead6] rounded-t-[40px] border-t-8 border-l-8 border-r-8 border-[#13202e] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] p-6 sm:p-8 max-h-[85vh] flex flex-col"
+            className="absolute z-30 bottom-0 left-0 right-0 mx-auto w-full max-w-md bg-[#f2ead6] rounded-t-[40px] border-t-8 border-l-8 border-r-8 border-[#13202e] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] p-6 sm:p-8 max-h-[85vh] touch-none"
           >
             <motion.div 
               className="w-16 h-2 bg-[#13202e] rounded-full mx-auto mb-8 opacity-50 cursor-pointer active:scale-110 transition-transform hover:opacity-100" 
@@ -375,10 +375,7 @@ export default function NutritionApp() {
             />
             
             {status === "SUCCESS" && results.prediction && (
-              <div 
-                className="flex flex-col gap-4 overflow-y-auto pb-2"
-                onPointerDownCapture={(e) => e.stopPropagation()}
-              >
+              <div className="flex flex-col h-full gap-3 sm:gap-4">
                 <div className="flex justify-between items-end border-b-4 border-[#13202e] pb-4 shrink-0">
                   <div>
                     <h3 className={`font-black text-[#13202e] tracking-tighter ${
@@ -436,9 +433,9 @@ export default function NutritionApp() {
                   </div>
                 </div>
 
-                <div className="bg-[#b5d5e2] border-4 border-[#13202e] rounded-xl p-4 flex items-start gap-3 shadow-[4px_4px_0px_#13202e] shrink-0">
-                  <Activity size={24} className="text-[#13202e] shrink-0 mt-0.5" strokeWidth={2.5} />
-                  <p className="text-sm font-bold text-[#13202e] leading-snug">
+                <div className="bg-[#b5d5e2] border-4 border-[#13202e] rounded-xl p-3 flex items-start gap-2 shadow-[4px_4px_0px_#13202e] shrink-0">
+                  <Activity size={20} className="text-[#13202e] shrink-0 mt-0.5" strokeWidth={2.5} />
+                  <p className="text-xs sm:text-sm font-bold text-[#13202e] leading-snug">
                     {results.message || NUTRITION_APP.success.messageFallback}
                   </p>
                 </div>
@@ -447,7 +444,7 @@ export default function NutritionApp() {
 
                 <button 
                   onClick={resetApp}
-                  className="w-full bg-[#de4b28] text-white font-black uppercase tracking-wider py-4 rounded-xl flex items-center justify-center gap-2 border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] hover:bg-[#c43f20] active:shadow-none active:translate-y-1 active:translate-x-1 transition-all shrink-0"
+                  className="w-full bg-[#de4b28] text-white font-black uppercase tracking-wider py-3 sm:py-4 rounded-xl flex items-center justify-center gap-2 border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] hover:bg-[#c43f20] active:shadow-none active:translate-y-1 active:translate-x-1 transition-all shrink-0"
                 >
                   <Camera size={20} strokeWidth={3} />
                   {NUTRITION_APP.success.cta}
@@ -456,10 +453,7 @@ export default function NutritionApp() {
             )}
 
             {status === "NO_FOOD" && (
-              <div 
-                className="flex flex-col gap-6 text-center py-4 overflow-y-auto pb-2"
-                onPointerDownCapture={(e) => e.stopPropagation()}
-              >
+              <div className="flex flex-col h-full gap-5 text-center py-4">
                 <div className="w-24 h-24 bg-[#61859b] text-[#f2ead6] rounded-full flex items-center justify-center mx-auto border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] shrink-0">
                   <ImageOff size={48} strokeWidth={2.5} aria-hidden />
                 </div>
@@ -468,14 +462,14 @@ export default function NutritionApp() {
                   <h3 className="text-3xl font-black uppercase text-[#13202e] mb-3">
                     {NUTRITION_APP.noFood.title}
                   </h3>
-                  <p className="text-[#3c556b] font-bold text-base leading-relaxed max-w-[280px] mx-auto">
+                  <p className="text-[#3c556b] font-bold text-sm leading-relaxed max-w-[280px] mx-auto">
                     {results.message || NUTRITION_APP.noFood.messageFallback}
                   </p>
                 </div>
 
                 <button
                   onClick={resetApp}
-                  className="w-full bg-[#13202e] text-[#f2ead6] font-black uppercase tracking-wider py-5 rounded-xl flex items-center justify-center gap-2 hover:bg-black transition-colors border-2 border-[#13202e] shadow-[4px_4px_0px_#13202e] active:shadow-none active:translate-y-1 active:translate-x-1 shrink-0"
+                  className="w-full bg-[#13202e] text-[#f2ead6] font-black uppercase tracking-wider py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-black transition-colors border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] active:shadow-none active:translate-y-1 active:translate-x-1 shrink-0"
                 >
                   <Camera size={20} strokeWidth={3} />
                   {NUTRITION_APP.noFood.cta}
@@ -484,10 +478,7 @@ export default function NutritionApp() {
             )}
 
             {status === "ERROR" && (
-              <div 
-                className="flex flex-col gap-6 text-center py-4 overflow-y-auto pb-2"
-                onPointerDownCapture={(e) => e.stopPropagation()}
-              >
+              <div className="flex flex-col h-full gap-5 text-center py-4">
                 <div className="w-24 h-24 bg-[#de4b28] text-white rounded-full flex items-center justify-center mx-auto border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] shrink-0">
                   <AlertTriangle size={48} strokeWidth={2.5} />
                 </div>
@@ -496,14 +487,14 @@ export default function NutritionApp() {
                   <h3 className="text-3xl font-black uppercase text-[#13202e] mb-3">
                     {NUTRITION_APP.error.title}
                   </h3>
-                  <p className="text-[#3c556b] font-bold text-base leading-relaxed max-w-[280px] mx-auto">
+                  <p className="text-[#3c556b] font-bold text-sm leading-relaxed max-w-[280px] mx-auto">
                     {NUTRITION_APP.error.body}
                   </p>
                 </div>
 
                 <button 
                   onClick={resetApp}
-                  className="w-full bg-[#13202e] text-[#f2ead6] font-black uppercase tracking-wider py-5 rounded-xl flex items-center justify-center gap-2 hover:bg-black transition-colors border-2 border-[#13202e] shadow-[4px_4px_0px_#13202e] active:shadow-none active:translate-y-1 active:translate-x-1 shrink-0"
+                  className="w-full bg-[#13202e] text-[#f2ead6] font-black uppercase tracking-wider py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-black transition-colors border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] active:shadow-none active:translate-y-1 active:translate-x-1 shrink-0"
                 >
                   <RefreshCcw size={20} strokeWidth={3} />
                   {NUTRITION_APP.error.cta}
