@@ -36,17 +36,15 @@ export default function NutritionApp() {
       const pending = pendingFeedbackRef.current;
       if (pending) {
         const base = getApiBaseUrl();
-        if (base) {
-          fetch(`${base}/api/v1/prediction/feedback/${pending.recordId}`, {
-            method: "POST",
-            headers: { 
-              "Accept": "application/json",
-              "Content-Type": "application/json" 
-            },
-            body: JSON.stringify({ sentiment: pending.sentiment }),
-            keepalive: true
-          }).catch(console.error);
-        }
+        fetch(`${base}/api/v1/prediction/feedback/${pending.recordId}`, {
+          method: "POST",
+          headers: { 
+            "Accept": "application/json",
+            "Content-Type": "application/json" 
+          },
+          body: JSON.stringify({ sentiment: pending.sentiment }),
+          keepalive: true
+        }).catch(console.error);
       }
     };
 
@@ -97,15 +95,6 @@ export default function NutritionApp() {
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
 
-    if (!base) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("NEXT_PUBLIC_API_URL is not set or empty");
-      }
-      setResults({ ok: false });
-      setStatus("ERROR");
-      return;
-    }
-
     setStatus("ANALYZING");
     setIsCollapsed(false);
 
@@ -155,8 +144,6 @@ export default function NutritionApp() {
   const executeSubmitFeedback = async (sentiment: 'like' | 'dislike', recordId: number, keepalive: boolean = false) => {
     try {
       const base = getApiBaseUrl();
-      if (!base) return;
-
       pendingFeedbackRef.current = null;
       if (timerRef.current) {
         clearTimeout(timerRef.current);

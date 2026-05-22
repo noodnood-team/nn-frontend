@@ -1,13 +1,12 @@
 const TRAILING_SLASHES = /\/+$/;
 
 /**
- * `NEXT_PUBLIC_API_URL` must be a non-empty string for predict requests.
  * Trailing slashes are stripped for stable URL building.
+ * If NEXT_PUBLIC_API_URL is not set, returns an empty string to use same-origin proxying.
  */
-export function getApiBaseUrl(): string | null {
+export function getApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_URL;
-  if (raw == null) return null;
+  if (raw == null) return "";
   const t = String(raw).trim();
-  if (t === "") return null;
   return t.replace(TRAILING_SLASHES, "");
 }
