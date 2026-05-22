@@ -57,15 +57,15 @@ export default function DashboardPage() {
             </div>
             <div className="h-10 w-48 bg-[#13202e] rounded-xl border-4 border-[#13202e]"></div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col justify-center items-center text-center animate-pulse h-48">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+            <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col justify-center items-center text-center animate-pulse h-48 lg:h-auto lg:min-h-[400px]">
                <div className="h-6 w-32 bg-[#3c556b] opacity-30 rounded-full mb-4"></div>
                <div className="h-16 w-24 bg-[#13202e] opacity-20 rounded-xl mb-4"></div>
             </div>
-            <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col animate-pulse h-48">
+            <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col animate-pulse h-48 lg:h-auto lg:min-h-[400px]">
                <div className="h-6 w-32 bg-[#3c556b] opacity-30 rounded-full mb-4 mx-auto"></div>
             </div>
-            <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col animate-pulse h-[500px]">
+            <div className="bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col animate-pulse h-[400px] lg:h-[500px] md:col-span-2 lg:col-span-1">
                <div className="h-6 w-32 bg-[#3c556b] opacity-30 rounded-full mb-4 mx-auto"></div>
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
           {/* Left Column: Stats */}
           <div className="flex flex-col h-full">
             {!hasData ? (
@@ -118,7 +118,7 @@ export default function DashboardPage() {
                   className="group w-full bg-[#f2ead6] border-4 border-[#13202e] shadow-[8px_8px_0px_#13202e] rounded-3xl p-6 flex flex-col justify-center items-center text-center hover:bg-[#e8dec7] transition-colors active:translate-y-1 active:translate-x-1 active:shadow-none mb-6"
                 >
                    <span className="text-[#3c556b] font-black uppercase tracking-widest text-sm mb-1">Total Scans</span>
-                   <span className="text-6xl font-black tracking-tighter text-[#13202e]">{summary.total_requests}</span>
+                   <span className="text-5xl lg:text-6xl font-black tracking-tighter text-[#13202e]">{summary.total_requests}</span>
                    <span className="text-[#de4b28] font-bold mt-2 bg-[#de4b28]/20 px-3 py-1 rounded-lg border-2 border-[#de4b28]">{((summary.success_count / summary.total_requests) * 100).toFixed(2)}% Success Rate</span>
                    <div className="flex items-center gap-1.5 mt-4 text-[#3c556b] opacity-80 bg-[#13202e]/5 px-3 py-1.5 rounded-full border-2 border-transparent group-hover:border-[#13202e]/20 transition-all">
                       <MousePointerClick size={16} strokeWidth={2.5} />
@@ -133,7 +133,7 @@ export default function DashboardPage() {
                      <div className="bg-[#de4b28] text-white border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-2xl p-4 flex justify-between items-center mb-1">
                         <div className="flex flex-col">
                           <span className="font-black uppercase tracking-widest text-xs opacity-90">Total Calories</span>
-                          <span className="text-4xl font-black">{(summary.nutrition_averages?.avg_calories || 0).toFixed(2)}</span>
+                          <span className="text-3xl lg:text-4xl font-black">{(summary.nutrition_averages?.avg_calories || 0).toFixed(2)}</span>
                         </div>
                         <Flame size={40} strokeWidth={2.5} className="opacity-50" />
                      </div>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
                 <div className="bg-[#13202e] text-[#f2ead6] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-2xl p-6 flex justify-between items-center mb-1">
                   <div className="flex flex-col">
                     <span className="font-black uppercase tracking-widest text-sm opacity-90 mb-1">Response Rate</span>
-                    <span className="text-6xl font-black tracking-tighter">{(summary.feedback.feedback_rate * 100).toFixed(1)}%</span>
+                    <span className="text-5xl lg:text-6xl font-black tracking-tighter">{(summary.feedback.feedback_rate * 100).toFixed(1)}%</span>
                   </div>
                   <MessageSquare size={56} strokeWidth={2.5} className="opacity-30" />
                 </div>
@@ -225,7 +225,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Column: History */}
-          <div className="flex flex-col relative h-full">
+          <div className="flex flex-col relative h-full md:col-span-2 lg:col-span-1">
              <div className="flex items-center justify-between mb-4 mt-2">
                 <h2 className="text-2xl font-black uppercase tracking-tight text-[#13202e]">History</h2>
              </div>

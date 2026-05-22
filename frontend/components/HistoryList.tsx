@@ -33,40 +33,39 @@ export default function HistoryList({ items, isAdminDashboard = false }: History
           <button
             key={item.id}
             onClick={() => setSelected(item)}
-            className="group w-full bg-[#f2ead6] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-2xl p-4 flex items-center justify-between hover:bg-[#e8dec7] transition-colors active:translate-y-1 active:translate-x-1 active:shadow-none text-left"
+            className="group w-full bg-[#f2ead6] border-4 border-[#13202e] shadow-[4px_4px_0px_#13202e] rounded-2xl p-3 flex items-center justify-between hover:bg-[#e8dec7] transition-colors active:translate-y-1 active:translate-x-1 active:shadow-none text-left overflow-hidden"
           >
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-full border-2 border-[#13202e] flex items-center justify-center ${isSuccess ? 'bg-[#b5d5e2]' : 'bg-[#de4b28] text-white'}`}>
-                <Clock size={20} strokeWidth={3} />
+            <div className="flex items-center gap-2 min-w-0 pr-2">
+              <div className={`w-10 h-10 shrink-0 rounded-full border-2 border-[#13202e] flex items-center justify-center ${isSuccess ? 'bg-[#b5d5e2]' : 'bg-[#de4b28] text-white'}`}>
+                <Clock size={18} strokeWidth={3} />
               </div>
-              <div className="flex flex-col">
-                <span className="font-black text-[#13202e] text-lg leading-tight">{timeStr}</span>
-                <span className="font-bold text-[#3c556b] text-xs uppercase">{dateStr}</span>
+              <div className="flex flex-col min-w-0">
+                <span className="font-black text-[#13202e] text-base leading-tight truncate">{timeStr}</span>
+                <span className="font-bold text-[#3c556b] text-[10px] uppercase truncate">{dateStr}</span>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-right">
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1 text-right">
                 {isSuccess ? (
                   <>
-                    <span className="font-black text-[#de4b28] text-xl">{(item.calories || 0).toFixed(2)}</span>
-                    <span className="font-bold text-[#13202e] text-sm uppercase tracking-tighter">
-                      <span className="hidden sm:inline">Calories</span>
-                      <span className="inline sm:hidden">Cal</span>
+                    <span className="font-black text-[#de4b28] text-lg">{(item.calories || 0).toFixed(0)}</span>
+                    <span className="font-bold text-[#13202e] text-[10px] uppercase tracking-tighter">
+                      CAL
                     </span>
                   </>
                 ) : item.outcome === "rejected_non_food" ? (
-                  <span className="font-black text-[#61859b] text-sm uppercase">No Food</span>
+                  <span className="font-black text-[#61859b] text-xs uppercase">No Food</span>
                 ) : (
-                  <span className="font-black text-[#de4b28] text-sm uppercase">Failed</span>
+                  <span className="font-black text-[#de4b28] text-xs uppercase">Failed</span>
                 )}
               </div>
               {isAdminDashboard && item.feedback_sentiment && isSuccess && (
                 item.feedback_sentiment === 'like' 
-                  ? <ThumbsUp size={18} className="text-[#4ade80] mx-1" strokeWidth={3} />
-                  : <ThumbsDown size={18} className="text-[#f87171] mx-1" strokeWidth={3} />
+                  ? <ThumbsUp size={16} className="text-[#4ade80]" strokeWidth={3} />
+                  : <ThumbsDown size={16} className="text-[#f87171]" strokeWidth={3} />
               )}
-              <ChevronRight size={20} strokeWidth={3} className="text-[#3c556b] opacity-40 group-hover:opacity-100 transition-opacity" />
+              <ChevronRight size={18} strokeWidth={3} className="text-[#3c556b] opacity-40 group-hover:opacity-100 transition-opacity shrink-0" />
             </div>
           </button>
         );
